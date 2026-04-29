@@ -108,7 +108,7 @@ cd /opt/pkgsrc/archivers/unzip
 bmake install
 ```
 
-如果构建成功，流程可以往下走；如果构建不成功，需要先自己进行鸿蒙适配，并把���蒙适配的内容提交到 `pkgsrc-ohos/pkgsrc` 仓库的 `pkgsrc-2025Q4` 分支。
+如果构建成功，流程可以往下走；如果构建不成功，需要先自己进行鸿蒙适配，并把鸿蒙适配的内容提交到 `pkgsrc-ohos/pkgsrc` 仓库的 `pkgsrc-2025Q4` 分支。
 
 ### 5. 更新白名单
 
@@ -143,7 +143,7 @@ mv whitelist.txt.tmp whitelist.txt
 
 本项目由四个仓库组成：
 
-* **pkgsrc-ohos/pkgsrc**：upstream pkgsrc 源码树，包含针对 OpenHarmony 的适配补丁（pkgsrc-2025Q4 分支）
+* **pkgsrc-ohos/pkgsrc**：Fork 自 pkgsrc 的源码树，包含针对 OpenHarmony 的适配补丁（pkgsrc-2025Q4 分支）
 * **pkgsrc-ohos/ci**：自动化流水线脚本，包含两个 Shell 脚本和一个 Python 工具
   - `bootstrap.sh`：构建 bootstrap kit（初始化包环境）
   - `bulk-build.sh`：批量编译 whitelist.txt 中的软件包
