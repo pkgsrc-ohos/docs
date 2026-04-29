@@ -108,7 +108,7 @@ cd /opt/pkgsrc/archivers/unzip
 bmake install
 ```
 
-如果构建成功，流程可以往下走；如果构建不成功，需要先自己进行鸿蒙适配，并把鸿蒙适配的内容提交到 `pkgsrc-ohos/pkgsrc` 仓库的 `pkgsrc-2025Q4` 分支。
+如果构建成功，流程可以往下走；如果构建不成功，需要先自己进行鸿蒙适配，并把���蒙适配的内容提交到 `pkgsrc-ohos/pkgsrc` 仓库的 `pkgsrc-2025Q4` 分支。
 
 ### 5. 更新白名单
 
@@ -141,7 +141,7 @@ mv whitelist.txt.tmp whitelist.txt
 
 ### 1. 架构概述
 
-本项目由三个仓库组成：
+本项目由四个仓库组成：
 
 * **pkgsrc-ohos/pkgsrc**：upstream pkgsrc 源码树，包含针对 OpenHarmony 的适配补丁（pkgsrc-2025Q4 分支）
 * **pkgsrc-ohos/ci**：自动化流水线脚本，包含两个 Shell 脚本和一个 Python 工具
@@ -149,13 +149,19 @@ mv whitelist.txt.tmp whitelist.txt
   - `bulk-build.sh`：批量编译 whitelist.txt 中的软件包
   - `objctl.py`：OSS/CDN 交互工具，处理制品上传和缓存刷新
   - `whitelist.txt`：需要构建的软件包列表
+* **pkgsrc-ohos/ci-runner**：CI 执行环境容器镜像，基于 DockerHarmony 二次封装
+  - 集成 OpenHarmony SDK 和 LLVM 编译工具链
+  - 预置必要的命令行工具（coreutils、git、vim、ssh 等）
+  - 预装阿里云 OSS/CDN Python SDK
+  - 通过 GitHub Actions 自动构建和发布到 GHCR
 * **pkgsrc-ohos/docs**：使用文档和二次开发指南
 
 流水线工作流程：
 
-1. **Bootstrap 阶段**（bootstrap.sh）：创建 .pkg 目录、装入 pkgin 和 SSL 证书、进行代码签名、打包上传
-2. **构建阶段**（bulk-build.sh）：下载 bootstrap kit、循环编译白名单中的每个软件包、自动增量检查（已构建则跳过）、更新包索引、上传制品
-3. **分发阶段**（objctl.py）：所有制品存储在阿里云 OSS，通过 CDN 加速分发给最终用户
+1. **容器环境**（ci-runner）：GitHub Actions 基于 ci-runner 镜像启动 arm64 执行器
+2. **Bootstrap 阶段**（bootstrap.sh）：创建 .pkg 目录、装入 pkgin 和 SSL 证书、进行代码签名、打包上传
+3. **构建阶段**（bulk-build.sh）：下载 bootstrap kit、循环编译白名单中的每个软件包、自动增量检查（已构建则跳过）、更新包索引、上传制品
+4. **分发阶段**（objctl.py）：所有制品存储在阿里云 OSS，通过 CDN 加速分发给最终用户
 
 ### 2. 基础设施准备
 
@@ -172,6 +178,7 @@ mv whitelist.txt.tmp whitelist.txt
 
 * `pkgsrc-ohos/pkgsrc`
 * `pkgsrc-ohos/ci`
+* `pkgsrc-ohos/ci-runner`（可选，除非需要自定义构建环境）
 
 ### 4. 配置流水线 Secrets
 
