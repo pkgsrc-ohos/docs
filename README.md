@@ -1,6 +1,8 @@
 # pkgsrc-ohos
 
-pkgsrc-ohos 项目是一个将 pkgsrc 移植到 OpenHarmony 平台的项目，为鸿蒙用户提供开箱即用的包管理器以及配套的软件仓库，支持运行在鸿蒙 PC、鸿蒙开发板和鸿蒙容器。
+pkgsrc-ohos 项目是一个将 pkgsrc 移植到 OpenHarmony 平台的项目，为鸿蒙用户提供开箱即用的包管理器以及配套的软件仓库，支持鸿蒙 PC、鸿蒙开发板和鸿蒙容器。
+
+> 仅支持 arm64 设备。
 
 ## 快速开始
 
@@ -145,16 +147,16 @@ mv whitelist.txt.tmp whitelist.txt
 
 * **pkgsrc-ohos/pkgsrc**：Fork 自 pkgsrc 的源码树，包含针对 OpenHarmony 的适配补丁（pkgsrc-2025Q4 分支）
 * **pkgsrc-ohos/ci**：自动化流水线脚本，包含两个 Shell 脚本和一个 Python 工具
-  - `bootstrap.sh`：构建 bootstrap kit（初始化包环境）
+  - `bootstrap.sh`：构建 bootstrap kit
   - `bulk-build.sh`：批量编译 whitelist.txt 中的软件包
   - `objctl.py`：OSS/CDN 交互工具，处理制品上传和缓存刷新
   - `whitelist.txt`：需要构建的软件包列表
 * **pkgsrc-ohos/ci-runner**：CI 执行环境容器镜像，基于 DockerHarmony 二次封装
-  - 集成 OpenHarmony SDK 和 LLVM 编译工具链
+  - 集成 OpenHarmony SDK
   - 预置必要的命令行工具（coreutils、git、vim、ssh 等）
   - 预装阿里云 OSS/CDN Python SDK
   - 通过 GitHub Actions 自动构建和发布到 GHCR
-* **pkgsrc-ohos/docs**：使用文档和二次开发指南
+* **pkgsrc-ohos/docs**：文档仓库
 
 流水线工作流程：
 
