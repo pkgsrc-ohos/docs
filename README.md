@@ -139,11 +139,11 @@ mv whitelist.txt.tmp whitelist.txt
 
 ## 二次开发指南
 
-本项目采用模块化设计，逻辑层与数据层解耦，便于开发者快速分叉（Fork）并构建私有仓库。
-
 ### 1. 架构概述
 
-* **核心逻辑**：由 `pkgsrc-ohos/ci` 仓库中的 3 个原子化脚本驱动核心流程。
+本项目采用模块化设计，逻辑层与数据层解耦，便于开发者快速分叉（Fork）并构建私有仓库。
+
+* **核心逻辑**：由 `pkgsrc-ohos/ci` 仓库中的 2 个自动化脚本驱动核心流程。
 * **上游分叉**：针对 OpenHarmony 的适配补丁维护在 `pkgsrc-ohos/pkgsrc` 仓库的 `pkgsrc-2025Q4` 分支。
 * **基础设施**：基于 GitHub Actions 实现自动化构建，并采用阿里云 OSS + CDN 进行制品分发。
 
