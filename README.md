@@ -1,6 +1,6 @@
 # pkgsrc-ohos
 
-pkgsrc-ohos 项目是一个将 pkgsrc 移植到 OpenHarmony 平台的项目，为鸿蒙用户提供开箱即用的包管理器以及配套的软件仓库，支持运行在鸿蒙 PC、鸿蒙开发板、[鸿蒙容器](https://github.com/hqzing/dockerharmony) 等不同形态的鸿蒙设备上（仅支持 arm64 设备）。
+pkgsrc-ohos 项目是一个将 pkgsrc 移植到 OpenHarmony 平台的项目，为鸿蒙用户提供开箱即用的包管理器以及配套的软件仓库，支持运行在鸿蒙 PC、鸿蒙开发板和鸿蒙容器。
 
 ## 快速开始
 
@@ -68,7 +68,7 @@ pkgin install [package]  # 安装软件包
 
 用户的 pkgin 能下载到哪些预构建包，是由 `pkgsrc-ohos/ci` 仓库里面的 whitelist.txt 文件决定的。
 
-pkgsrc 源码树里面有大量软件包，但只有白名单里面的软件包会被本项目的流水线构建。如果想要录入新的软件包，就把这个软件包加入到白名单列表里面，管理员合入 PR 之后会手动触发 bulk-build 工作流（工作流文件在 `pkgsrc-ohos/ci` 仓库中）进行批量构建，待构建完成后，用户即可通过 pkgin 下载到这个包。
+pkgsrc 源码树里面有大量软件包，但只有白名单里面的软件包会被本项目的流水线构建。如果想要录入新的软件包，就把这个软件包加入到白名单列表。
 
 具体操作步骤如下
 
@@ -108,11 +108,11 @@ cd /opt/pkgsrc/archivers/unzip
 bmake install
 ```
 
-如果构建成功，流程可以往下走；如果构建不成功，需要先自己进行鸿蒙适配，并把鸿蒙适配的内容提交到 `pkgsrc-ohos/pkgsrc` 仓库的 `pkgsrc-2025Q4` 分支中。
+如果构建成功，流程可以往下走；如果构建不成功，需要先自己进行鸿蒙适配，并把鸿蒙适配的内容提交到 `pkgsrc-ohos/pkgsrc` 仓库的 `pkgsrc-2025Q4` 分支。
 
 ### 5. 更新白名单
 
-把 `pkgsrc-ohos/ci` 仓库的 whitelist.txt 拷贝到这个软件包的源码目录中，然后执行这几句命令，它会自动把这个软件包和级联依赖都更新到 whitelist.txt 文件里面。
+把 `pkgsrc-ohos/ci` 仓库的 whitelist.txt 拷贝到这个软件包的源码目录中，然后执行这几句命令，它会自动把这个软件包和级联依赖都更新到 whitelist.txt 文件中。
 
 以 unzip 软件包为例，操作如下
 
@@ -141,11 +141,21 @@ mv whitelist.txt.tmp whitelist.txt
 
 ### 1. 架构概述
 
-本项目采用模块化设计，逻辑层与数据层解耦，便于开发者快速分叉（Fork）并构建私有仓库。
+本项目由三个仓库组成：
 
-* **核心逻辑**：由 `pkgsrc-ohos/ci` 仓库中的 2 个自动化脚本驱动核心流程。
-* **上游分叉**：针对 OpenHarmony 的适配补丁维护在 `pkgsrc-ohos/pkgsrc` 仓库的 `pkgsrc-2025Q4` 分支。
-* **基础设施**：基于 GitHub Actions 实现自动化构建，并采用阿里云 OSS + CDN 进行制品分发。
+* **pkgsrc-ohos/pkgsrc**：upstream pkgsrc 源码树，包含针对 OpenHarmony 的适配补丁（pkgsrc-2025Q4 分支）
+* **pkgsrc-ohos/ci**：自动化流水线脚本，包含两个 Shell 脚本和一个 Python 工具
+  - `bootstrap.sh`：构建 bootstrap kit（初始化包环境）
+  - `bulk-build.sh`：批量编译 whitelist.txt 中的软件包
+  - `objctl.py`：OSS/CDN 交互工具，处理制品上传和缓存刷新
+  - `whitelist.txt`：需要构建的软件包列表
+* **pkgsrc-ohos/docs**：使用文档和二次开发指南
+
+流水线工作流程：
+
+1. **Bootstrap 阶段**（bootstrap.sh）：创建 .pkg 目录、装入 pkgin 和 SSL 证书、进行代码签名、打包上传
+2. **构建阶段**（bulk-build.sh）：下载 bootstrap kit、循环编译白名单中的每个软件包、自动增量检查（已构建则跳过）、更新包索引、上传制品
+3. **分发阶段**（objctl.py）：所有制品存储在阿里云 OSS，通过 CDN 加速分发给最终用户
 
 ### 2. 基础设施准备
 
@@ -153,7 +163,7 @@ mv whitelist.txt.tmp whitelist.txt
 
 * **域名资产**：准备一个域名用于制品分发。建议完成备案（非刚需）。
 * **对象存储 (OSS)**：创建阿里云 OSS Bucket，记录其 Endpoint（外网访问节点）、Bucket Name 及 Region。
-* **内容分发 (CDN)**：将域名绑定至 CDN 服务，回源地址配置为上述 OSS Bucket。若域名未备案，加速区域请选择“全球（不包含中国内地）”。
+* **内容分发 (CDN)**：将域名绑定至 CDN 服务，回源地址配置为上述 OSS Bucket。若域名未备案，加速区域请选择"全球（不包含中国内地）"。
 * **访问控制 (RAM)**：创建具有 OSS/CDN 操作权限的 AccessKey ID (AK) 与 AccessKey Secret (SK)。
 
 ### 3. 仓库分叉 (Fork)
@@ -187,4 +197,4 @@ mv whitelist.txt.tmp whitelist.txt
 
 参考本项目的安装指南，将你的 bootstrap kit 分发给用户使用即可。
 
-在执行 `bootstrap` 工作流时，构建脚本会自动修改 `etc/pkgin/repositories.conf`，将默认软件源指向你的 `CDN_DOMAIN`。因此你只需向用户分发你的 bootstrap kit，用户就能用 pkgin 命令从你的仓库下载软件包。
+在执行 `bootstrap` 工作流时，构建脚本会自动修改 `etc/pkgin/repositories.conf`，将默认软件源指向你的 `CDN_DOMAIN`。因此你只需向用户分发你的 bootstrap kit，用户使用时会自动从你的 CDN 拉取软件包。
