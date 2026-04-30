@@ -101,7 +101,7 @@ git clone --depth 1 -b pkgsrc-2025Q4 https://github.com/pkgsrc-ohos/pkgsrc.git
 
 ### 4. 构建验证
 
-在把软件包添加到白名单之前，需要先在本地对目标软件包进行构建验证，确保它能成功构建出来。
+在将软件包添加进白名单之前，需要先在本地对目标软件包进行构建验证，确保它能成功构建出来。
 
 以 unzip 软件包为例，操作如下
 
@@ -114,7 +114,7 @@ bmake install
 
 ### 5. 更新白名单
 
-把 `pkgsrc-ohos/ci` 仓库的 whitelist.txt 拷贝到这个软件包的源码目录中，然后执行这几句命令，它会自动把这个软件包和级联依赖都更新到 whitelist.txt 文件中。
+将目标软件包及其级联依赖都更新到 whitelist.txt 文件中。
 
 以 unzip 软件包为例，操作如下
 
